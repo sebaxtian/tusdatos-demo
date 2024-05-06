@@ -1,0 +1,101 @@
+### Get user token
+POST {{host}}/token
+Content-Type: application/x-www-form-urlencoded
+
+username = {{username}} &
+password = {{password}}
+
+> {%
+    client.test("Request executed successfully", () => {
+        client.assert(response.status === 200, "Response status is not 200")
+    })
+
+    client.test("Content-Type is application/json", () => {
+        const contentType = response.headers.valueOf("content-type")
+        client.assert(contentType == "application/json", `Expected Content-Type is application/json, but actual is ${contentType}`)
+    })
+
+    client.test("Property access_token exists", () => {
+        client.assert(response.body.hasOwnProperty("access_token"), "Cannot find 'access_token' property in response")
+        client.global.set("access_token", response.body['access_token'])
+    })
+
+    client.test("Property token_type exists", () => {
+        client.assert(response.body.hasOwnProperty("token_type"), "Cannot find 'token_type' property in response")
+    })
+%}
+
+### Get user data
+GET {{host}}/users/me/
+Authorization: Bearer {{access_token}}
+
+> {%
+    client.test("Request executed successfully", () => {
+        client.assert(response.status === 200, "Response status is not 200")
+    })
+
+    client.test("Content-Type is application/json", () => {
+        const contentType = response.headers.valueOf("content-type")
+        client.assert(contentType == "application/json", `Expected Content-Type is application/json, but actual is ${contentType}`)
+    })
+
+    client.test("User Schema is valid", () => {
+        const properties = ["id","username","email","full_name","disabled","created","updated"]
+        for (let p of properties) {
+            client.assert(response.body.hasOwnProperty(p), `Cannot find '${p}' property in response`)
+        }
+        client.assert(!response.body.hasOwnProperty('hashed_password'), "Find 'hashed_password' property in response")
+        client.assert(!response.body['disabled'], "User is already disabled")
+    })
+%}
+
+### Get Info
+GET {{host}}/
+
+> {%
+    client.test("Request executed successfully", () => {
+        client.assert(response.status === 200, "Response status is not 200")
+    })
+
+    client.test("Content-Type is application/json", () => {
+        const contentType = response.headers.valueOf("content-type")
+        client.assert(contentType == "application/json", `Expected Content-Type is application/json, but actual is ${contentType}`)
+    })
+
+    client.test("Info is valid", () => {
+        const properties = ["app_name","env","date_time"]
+        for (let p of properties) {
+            client.assert(response.body.hasOwnProperty(p), `Cannot find '${p}' property in response`)
+        }
+    })
+%}
+
+### Get Info
+GET {{host}}/
+
+> {%
+    client.test("Request executed successfully", () => {
+        client.assert(response.status === 200, "Response status is not 200")
+    })
+
+    client.test("Content-Type is application/json", () => {
+        const contentType = response.headers.valueOf("content-type")
+        client.assert(contentType == "application/json", `Expected Content-Type is application/json, but actual is ${contentType}`)
+    })
+
+    client.test("Cache-Control exists", () => {
+        const cacheControl = response.headers.valueOf("cache-control")
+        client.assert(cacheControl != null, "Expected Cache-Control in response headers")
+        client.assert(cacheControl.includes("max-age="), `Expected Cache-Control is max-age=, but actual is ${cacheControl}`)
+    })
+%}
+
+### Delete Cache Info
+DELETE {{host}}/clear-cache
+Authorization: Bearer {{access_token}}
+
+> {%
+    client.test("Request executed successfully", () => {
+        client.assert(response.status === 200, "Response status is not 200")
+    });
+%}

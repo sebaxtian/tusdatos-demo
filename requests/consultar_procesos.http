@@ -1,0 +1,151 @@
+### Get user token
+POST {{host}}/token
+Content-Type: application/x-www-form-urlencoded
+
+username = {{username}} &
+password = {{password}}
+
+> {%
+    client.test("Request executed successfully", () => {
+        client.assert(response.status === 200, "Response status is not 200")
+    })
+
+    client.test("Content-Type is application/json", () => {
+        const contentType = response.headers.valueOf("content-type")
+        client.assert(contentType == "application/json", `Expected Content-Type is application/json, but actual is ${contentType}`)
+    })
+
+    client.test("Property access_token exists", () => {
+        client.assert(response.body.hasOwnProperty("access_token"), "Cannot find 'access_token' property in response")
+        client.global.set("access_token", response.body['access_token'])
+    })
+
+    client.test("Property token_type exists", () => {
+        client.assert(response.body.hasOwnProperty("token_type"), "Cannot find 'token_type' property in response")
+    })
+%}
+
+### Consultar procesos
+POST {{host}}/consultar/procesos
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "hid": "0992339411001",
+  "tipo": "ACTOR_OFENDIDO"
+}
+
+> {%
+    client.test("Request executed successfully", () => {
+        client.assert(response.status === 202, "Response status is not 202")
+    })
+
+    client.test("Content-Type is application/json", () => {
+        const contentType = response.headers.valueOf("content-type")
+        client.assert(contentType == "application/json", `Expected Content-Type is application/json, but actual is ${contentType}`)
+    })
+
+    client.test("Property hid_entidad exists", () => {
+        client.assert(response.body.hasOwnProperty("hid_entidad"), "Cannot find 'hid_entidad' property in response")
+    })
+
+    client.test("Property tipo_entidad exists", () => {
+        client.assert(response.body.hasOwnProperty("tipo_entidad"), "Cannot find 'tipo_entidad' property in response")
+    })
+
+    client.test("Property status exists", () => {
+        client.assert(response.body.hasOwnProperty("status"), "Cannot find 'status' property in response")
+    })
+
+    client.test("Property created exists", () => {
+        client.assert(response.body.hasOwnProperty("created"), "Cannot find 'created' property in response")
+    })
+
+    client.test("Property updated exists", () => {
+        client.assert(response.body.hasOwnProperty("updated"), "Cannot find 'updated' property in response")
+    })
+%}
+
+### Consultar procesos batch
+POST {{host}}/consultar/procesos/batch
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+[
+  {
+    "hid": "0992339411001",
+    "tipo": "ACTOR_OFENDIDO"
+  },
+  {
+    "hid": "0968599020001",
+    "tipo": "DEMANDADO_PROCESADO"
+  },
+  {
+    "hid": "0968599020001",
+    "tipo": "ACTOR_OFENDIDO"
+  },
+  {
+    "hid": "1791251237001",
+    "tipo": "DEMANDADO_PROCESADO"
+  }
+]
+
+> {%
+    client.test("Request executed successfully", () => {
+        client.assert(response.status === 202, "Response status is not 202")
+    })
+
+    client.test("Content-Type is application/json", () => {
+        const contentType = response.headers.valueOf("content-type")
+        client.assert(contentType == "application/json", `Expected Content-Type is application/json, but actual is ${contentType}`)
+    })
+
+    client.test("Length estado procesos", () => {
+        client.assert(response.body.length < 16, "Length should be < 16")
+    })
+
+    client.test("Properties", () => {
+        for (let proceso of response.body) {
+            client.assert(proceso.hasOwnProperty("hid_entidad"), "Cannot find 'hid_entidad' property in response")
+            client.assert(proceso.hasOwnProperty("tipo_entidad"), "Cannot find 'tipo_entidad' property in response")
+            client.assert(proceso.hasOwnProperty("status"), "Cannot find 'status' property in response")
+            client.assert(proceso.hasOwnProperty("created"), "Cannot find 'created' property in response")
+            client.assert(proceso.hasOwnProperty("updated"), "Cannot find 'updated' property in response")
+        }
+    })
+%}
+
+### Consultar procesos de una entidad
+GET {{host}}/ACTOR_OFENDIDO/0992339411001/procesos
+Authorization: Bearer {{access_token}}
+Content-Type: application/x-www-form-urlencoded
+
+skip = 0 &
+limit = 10
+
+> {%
+    client.test("Request executed successfully", () => {
+        client.assert(response.status === 200, "Response status is not 200")
+    })
+
+    client.test("Content-Type is application/json", () => {
+        const contentType = response.headers.valueOf("content-type")
+        client.assert(contentType == "application/json", `Expected Content-Type is application/json, but actual is ${contentType}`)
+    })
+
+    client.test("Property count exists", () => {
+        client.assert(response.body.hasOwnProperty("count"), "Cannot find 'count' property in response")
+    })
+
+    client.test("Property skip exists", () => {
+        client.assert(response.body.hasOwnProperty("skip"), "Cannot find 'skip' property in response")
+    })
+
+    client.test("Property limit exists", () => {
+        client.assert(response.body.hasOwnProperty("limit"), "Cannot find 'limit' property in response")
+    })
+
+    client.test("Property procesos exists", () => {
+        client.assert(response.body.hasOwnProperty("procesos"), "Cannot find 'updated' property in response")
+    })
+%}

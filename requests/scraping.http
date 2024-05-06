@@ -1,0 +1,24 @@
+### Buscar Actor/Ofendido
+POST {{host}}# TODO: El codigo de este metodo solo se comparte al momento de sustentar la solucion en la presentacion
+Content-Type: application/json
+
+# TODO: El codigo de este metodo solo se comparte al momento de sustentar la solucion en la presentacion
+
+
+### Buscar Demandado/Procesado
+POST {{host}}# TODO: El codigo de este metodo solo se comparte al momento de sustentar la solucion en la presentacion
+Content-Type: application/json
+
+# TODO: El codigo de este metodo solo se comparte al momento de sustentar la solucion en la presentacion
+
+
+### Detalles Proceso
+GET {{host}}# TODO: El codigo de este metodo solo se comparte al momento de sustentar la solucion en la presentacion
+Content-Type: application/json
+
+
+### Actuaciones Proceso
+POST {{host}}# TODO: El codigo de este metodo solo se comparte al momento de sustentar la solucion en la presentacion
+Content-Type: application/json
+
+# TODO: El codigo de este metodo solo se comparte al momento de sustentar la solucion en la presentacion
